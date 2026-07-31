@@ -2,7 +2,6 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import SignOutButton from "./SignOutButton";
-import NavLinks from "./NavLinks";
 
 function initialsOf(name?: string | null) {
   if (!name) return "?";
@@ -22,8 +21,6 @@ export default async function TopNav() {
           </svg>
           <h1 className="font-serif text-lg font-semibold m-0">Reed</h1>
         </Link>
-
-        {session && <NavLinks />}
 
         <div className="flex items-center gap-3 shrink-0 ml-auto">
           {session?.user ? (
