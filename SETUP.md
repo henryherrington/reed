@@ -94,8 +94,17 @@ Easiest path is Vercel:
 
 1. Push this folder to a GitHub repo.
 2. [vercel.com](https://vercel.com) → New Project → import the repo.
-3. Add the same environment variables as `.env`, except:
+3. Add environment variables. Most are the same as `.env`, with two exceptions:
    - `NEXTAUTH_URL` → your Vercel URL, e.g. `https://reed.vercel.app`
+   - `DATABASE_URL` → **don't reuse your local direct connection string here.**
+     Vercel's serverless functions can't reach Supabase's direct connection
+     (it's IPv6-only, Vercel is IPv4-only) and every sign-in will fail with a
+     `Can't reach database server` error. Instead, grab the **pooler**
+     connection string from Supabase → Connect → "Transaction pooler" tab
+     (port 6543), and make sure `?pgbouncer=true` is on the end of it.
+   - `DIRECT_URL` → your normal direct connection string (port 5432), same as
+     locally. Migrations don't actually run on Vercel in this setup, but
+     Prisma still needs the variable defined or the build fails.
 4. Deploy.
 5. Go back to Google Cloud Console → your OAuth client → add
    `https://reed.vercel.app` to authorized origins and
