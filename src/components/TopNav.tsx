@@ -18,7 +18,7 @@ export default async function TopNav() {
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <svg width="24" height="24" viewBox="0 0 32 32" fill="none" stroke="#20201d" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
             <path d="M16 27L16 4" />
-            <path d="M23 27C24 17 17 12 14 10" />
+            <path d="M23 27C24 17 17 12 14 10L9.5 7" />
           </svg>
           <h1 className="font-serif text-lg font-semibold m-0">Reed</h1>
         </Link>
