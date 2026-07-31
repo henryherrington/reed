@@ -17,8 +17,7 @@ export default async function TopNav() {
       <div className="max-w-4xl mx-auto px-7 py-3 flex items-center gap-7">
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <svg width="24" height="24" viewBox="0 0 32 32" fill="none" stroke="#20201d" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
-            <path d="M10 27C10 19 11 11 15 5" />
-            <path d="M16 27C16.5 18 17 10 17.5 4" />
+            <path d="M16 27L16 4" />
             <path d="M23 27C22 20 19.5 13 15.5 7" />
           </svg>
           <h1 className="font-serif text-lg font-semibold m-0">Reed</h1>
