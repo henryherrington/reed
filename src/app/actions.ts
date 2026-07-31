@@ -11,11 +11,25 @@ async function requireUserId() {
   return session.user.id;
 }
 
-function revalidateAll() {
+function revalidateAll(itemId?: string, entryId?: string) {
   revalidatePath("/");
   revalidatePath("/profile");
   revalidatePath("/activity");
   revalidatePath("/popular");
+  if (itemId) revalidatePath(`/book/${itemId}`);
+  if (entryId) revalidatePath(`/review/${entryId}`);
+}
+
+export async function searchItems(query: string) {
+  await requireUserId();
+  const q = query.trim();
+  if (!q) return [];
+
+  return prisma.item.findMany({
+    where: { title: { contains: q, mode: "insensitive" } },
+    orderBy: { title: "asc" },
+    take: 8,
+  });
 }
 
 export async function addItem(title: string, url: string) {
@@ -39,7 +53,19 @@ export async function addItem(title: string, url: string) {
     create: { userId, itemId: item.id },
   });
 
-  revalidateAll();
+  revalidateAll(item.id);
+  return item;
+}
+
+export async function addToLibrary(itemId: string) {
+  const userId = await requireUserId();
+  await prisma.libraryEntry.upsert({
+    where: { userId_itemId: { userId, itemId } },
+    update: {},
+    create: { userId, itemId },
+  });
+
+  revalidateAll(itemId);
 }
 
 export async function toggleRead(entryId: string) {
@@ -52,23 +78,28 @@ export async function toggleRead(entryId: string) {
     where: { id: entryId },
     data: read
       ? { read: true }
-      : { read: false, rating: null, pinned: false, dateRated: null },
+      : { read: false, rating: null, reviewText: null, pinned: false, dateRated: null },
   });
 
-  revalidateAll();
+  revalidateAll(entry.itemId, entryId);
 }
 
-export async function rateItem(entryId: string, rating: number) {
+export async function rateItem(entryId: string, rating: number, reviewText?: string) {
   const userId = await requireUserId();
   const entry = await prisma.libraryEntry.findUnique({ where: { id: entryId } });
   if (!entry || entry.userId !== userId) throw new Error("Not found");
 
   await prisma.libraryEntry.update({
     where: { id: entryId },
-    data: { rating, dateRated: new Date(), read: true },
+    data: {
+      rating,
+      dateRated: new Date(),
+      read: true,
+      ...(reviewText !== undefined ? { reviewText: reviewText || null } : {}),
+    },
   });
 
-  revalidateAll();
+  revalidateAll(entry.itemId, entryId);
 }
 
 export async function togglePin(entryId: string) {
@@ -83,18 +114,7 @@ export async function togglePin(entryId: string) {
 
   await prisma.libraryEntry.update({ where: { id: entryId }, data: { pinned: !entry.pinned } });
 
-  revalidateAll();
-}
-
-export async function addFromPopular(itemId: string) {
-  const userId = await requireUserId();
-  await prisma.libraryEntry.upsert({
-    where: { userId_itemId: { userId, itemId } },
-    update: {},
-    create: { userId, itemId },
-  });
-
-  revalidateAll();
+  revalidateAll(entry.itemId, entryId);
 }
 
 export async function followByEmail(email: string) {

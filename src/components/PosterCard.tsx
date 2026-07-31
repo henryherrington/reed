@@ -1,21 +1,12 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { toggleRead, togglePin, rateItem, addFromPopular } from "@/app/actions";
+import { useRouter } from "next/navigation";
+import { toggleRead, togglePin, rateItem, addToLibrary } from "@/app/actions";
+import { posterColor } from "@/lib/posterColor";
 import RateModal from "./RateModal";
 
 type Item = { id: string; title: string; url: string; source: string };
-
-const POSTER_COLORS = ["#e7d9c4", "#cddccb", "#e6cdbf", "#c6d3e2", "#ddc9d5", "#d3ddc4", "#e3d7bd", "#c3d6d4"];
-
-function hashStr(s: string) {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
-  return h;
-}
-function posterColor(id: string) {
-  return POSTER_COLORS[hashStr(id) % POSTER_COLORS.length];
-}
 
 export default function PosterCard({
   item,
@@ -45,6 +36,7 @@ export default function PosterCard({
   const [, startTransition] = useTransition();
   const [showRate, setShowRate] = useState(false);
   const color = posterColor(item.id);
+  const router = useRouter();
 
   function handleReadToggle(e: React.MouseEvent) {
     e.stopPropagation();
@@ -76,7 +68,7 @@ export default function PosterCard({
     e.stopPropagation();
     startTransition(async () => {
       try {
-        await addFromPopular(item.id);
+        await addToLibrary(item.id);
       } catch (err) {
         alert(err instanceof Error ? err.message : "Something went wrong");
       }
@@ -100,7 +92,7 @@ export default function PosterCard({
       <div
         className="relative w-full rounded-md overflow-hidden cursor-pointer flex items-end p-2.5"
         style={{ background: color, aspectRatio: "5/7" }}
-        onClick={() => window.open(item.url, "_blank")}
+        onClick={() => router.push(`/book/${item.id}`)}
       >
         {showPin && (
           <div

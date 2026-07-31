@@ -75,11 +75,12 @@ model LibraryEntry {
   itemId String
   item   Item   @relation(fields: [itemId], references: [id], onDelete: Cascade)
 
-  read      Boolean   @default(false)
-  rating    Int?
-  pinned    Boolean   @default(false)
-  dateAdded DateTime  @default(now())
-  dateRated DateTime?
+  read       Boolean   @default(false)
+  rating     Int?
+  reviewText String?   @db.Text
+  pinned     Boolean   @default(false)
+  dateAdded  DateTime  @default(now())
+  dateRated  DateTime?
 
   @@unique([userId, itemId])
 }

@@ -7,14 +7,17 @@ export default function RateModal({
   title,
   entryId,
   initialRating,
+  initialReviewText,
   onClose,
 }: {
   title: string;
   entryId: string;
   initialRating: number | null;
+  initialReviewText?: string | null;
   onClose: () => void;
 }) {
   const [selected, setSelected] = useState(initialRating || 0);
+  const [text, setText] = useState(initialReviewText || "");
   const [saving, setSaving] = useState(false);
 
   async function save() {
@@ -24,7 +27,7 @@ export default function RateModal({
     }
     setSaving(true);
     try {
-      await rateItem(entryId, selected);
+      await rateItem(entryId, selected, text.trim());
     } catch (err) {
       alert(err instanceof Error ? err.message : "Something went wrong");
     }
@@ -49,6 +52,14 @@ export default function RateModal({
             </span>
           ))}
         </div>
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Write a review (optional)"
+          rows={3}
+          className="w-full px-3 py-2 rounded-lg border text-sm resize-none"
+          style={{ borderColor: "var(--line)" }}
+        />
         <div className="flex justify-center gap-2.5 mt-5">
           <button onClick={onClose} className="px-4 py-2 rounded-lg text-sm border" style={{ borderColor: "var(--line)" }}>
             Skip
