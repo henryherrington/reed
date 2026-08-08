@@ -145,27 +145,7 @@ export default async function HomePage({
         </Rail>
       )}
 
-      <div className="flex items-center justify-between mb-3">
-        <p className="text-xs uppercase tracking-wide text-ink/40 font-semibold m-0">Your library</p>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-2 mb-5">
-        <div className="flex gap-0.5 bg-white p-1 rounded-lg" style={{ boxShadow: "inset 0 0 0 1px var(--line)" }}>
-          {["all", "unread", "read"].map((v) => (
-            <Link
-              key={v}
-              href={filterHref(v, sort)}
-              className={`px-3 py-1.5 rounded-md text-xs ${readFilter === v ? "bg-bg text-accent font-semibold" : "text-ink/60"}`}
-            >
-              {v[0].toUpperCase() + v.slice(1)}
-            </Link>
-          ))}
-        </div>
-        <SortSelect current={sort} />
-        <span className="ml-auto text-xs text-ink/40">
-          {entries.length} item{entries.length === 1 ? "" : "s"}
-        </span>
-      </div>
+      <p className="text-xs uppercase tracking-wide text-ink/40 font-semibold mb-3">Saved</p>
 
       {entries.length === 0 ? (
         <div className="text-center py-16 text-ink/40">
@@ -175,7 +155,32 @@ export default async function HomePage({
           </p>
         </div>
       ) : (
-        <LibraryGrid entries={entries} editable storageKey="reed-view-home" defaultView="table" />
+        <LibraryGrid
+          entries={entries}
+          editable
+          allowRate={false}
+          storageKey="reed-view-home"
+          defaultView="table"
+          extraControls={
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex gap-0.5 bg-white p-1 rounded-lg" style={{ boxShadow: "inset 0 0 0 1px var(--line)" }}>
+                {["all", "unread", "read"].map((v) => (
+                  <Link
+                    key={v}
+                    href={filterHref(v, sort)}
+                    className={`px-3 py-1.5 rounded-md text-xs ${readFilter === v ? "bg-bg text-accent font-semibold" : "text-ink/60"}`}
+                  >
+                    {v[0].toUpperCase() + v.slice(1)}
+                  </Link>
+                ))}
+              </div>
+              <SortSelect current={sort} />
+              <span className="text-xs text-ink/40">
+                {entries.length} item{entries.length === 1 ? "" : "s"}
+              </span>
+            </div>
+          }
+        />
       )}
     </div>
   );

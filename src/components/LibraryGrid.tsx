@@ -3,7 +3,6 @@
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import PosterCard from "./PosterCard";
-import RateModal from "./RateModal";
 import { toggleRead, rateItem } from "@/app/actions";
 import { posterColor } from "@/lib/posterColor";
 import EyeIcon from "./EyeIcon";
@@ -40,13 +39,17 @@ function ListIcon() {
 export default function LibraryGrid({
   entries,
   editable = false,
+  allowRate = true,
   storageKey,
   defaultView = "table",
+  extraControls,
 }: {
   entries: Entry[];
   editable?: boolean;
+  allowRate?: boolean;
   storageKey: string;
   defaultView?: View;
+  extraControls?: React.ReactNode;
 }) {
   const [view, setView] = useState<View>(defaultView);
 
@@ -62,8 +65,9 @@ export default function LibraryGrid({
 
   return (
     <div>
-      <div className="flex justify-end mb-3">
-        <div className="flex gap-0.5 bg-white p-1 rounded-lg" style={{ boxShadow: "inset 0 0 0 1px var(--line)" }}>
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <div>{extraControls}</div>
+        <div className="flex gap-0.5 bg-white p-1 rounded-lg shrink-0" style={{ boxShadow: "inset 0 0 0 1px var(--line)" }}>
           <button
             onClick={() => choose("table")}
             aria-label="Table view"
@@ -87,33 +91,30 @@ export default function LibraryGrid({
             <PosterCard
               key={e.id}
               item={e.item}
-              entryId={editable ? e.id : undefined}
+              entryId={allowRate ? e.id : undefined}
               read={e.read}
               rating={e.rating}
               showRead
-              editable={editable}
+              editable={allowRate}
             />
           ))}
         </div>
       ) : (
-        <TableView entries={entries} editable={editable} />
+        <TableView entries={entries} editable={editable} allowRate={allowRate} />
       )}
     </div>
   );
 }
 
-function TableView({ entries, editable }: { entries: Entry[]; editable: boolean }) {
+function TableView({ entries, editable, allowRate }: { entries: Entry[]; editable: boolean; allowRate: boolean }) {
   const [, startTransition] = useTransition();
-  const [rateFor, setRateFor] = useState<Entry | null>(null);
   const router = useRouter();
 
   function handleReadToggle(e: React.MouseEvent, entry: Entry) {
     e.stopPropagation();
-    const willBeRead = !entry.read;
     startTransition(async () => {
       try {
         await toggleRead(entry.id);
-        if (willBeRead && entry.rating == null) setRateFor(entry);
       } catch (err) {
         alert(err instanceof Error ? err.message : "Something went wrong");
       }
@@ -160,9 +161,9 @@ function TableView({ entries, editable }: { entries: Entry[]; editable: boolean 
             {[1, 2, 3, 4, 5].map((n) => (
               <span
                 key={n}
-                onClick={editable ? (e) => handleStar(e, entry, n) : undefined}
+                onClick={allowRate ? (e) => handleStar(e, entry, n) : undefined}
                 className="text-[13px]"
-                style={{ color: (entry.rating || 0) >= n ? "#c99a3c" : "var(--line)", cursor: editable ? "pointer" : "default" }}
+                style={{ color: (entry.rating || 0) >= n ? "#c99a3c" : "var(--line)", cursor: allowRate ? "pointer" : "default" }}
               >
                 ★
               </span>
@@ -180,9 +181,6 @@ function TableView({ entries, editable }: { entries: Entry[]; editable: boolean 
           </a>
         </div>
       ))}
-      {rateFor && (
-        <RateModal title={rateFor.item.title} entryId={rateFor.id} initialRating={null} onClose={() => setRateFor(null)} />
-      )}
     </div>
   );
 }
