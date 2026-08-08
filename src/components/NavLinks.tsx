@@ -19,9 +19,7 @@ export default function NavLinks() {
           <Link
             key={t.href}
             href={t.href}
-            className={`text-sm pb-0.5 border-b-2 ${
-              active ? "text-accent font-semibold border-accent" : "text-ink/60 font-medium border-transparent hover:text-ink"
-            }`}
+            className={`text-sm font-medium ${active ? "text-ink underline" : "text-ink/60 hover:text-ink"}`}
           >
             {t.label}
           </Link>
