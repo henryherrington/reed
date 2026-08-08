@@ -12,7 +12,7 @@ const config: Config = {
       },
       fontFamily: {
         serif: ["Fraunces", "serif"],
-        sans: ["Inter", "sans-serif"],
+        sans: ["Plus Jakarta Sans", "sans-serif"],
       },
     },
   },
