@@ -141,9 +141,12 @@ function TableView({ entries, editable, allowRate }: { entries: Entry[]; editabl
           className={`flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-bg ${i > 0 ? "border-t" : ""}`}
           style={{ borderColor: "var(--line)" }}
         >
-          <div className="w-7 h-7 rounded shrink-0" style={{ background: posterColor(entry.item.id) }} />
+          <div
+            className="w-7 h-7 rounded shrink-0"
+            style={{ background: posterColor(entry.item.id), filter: entry.read ? "grayscale(0.85)" : undefined }}
+          />
           <div className="min-w-0 flex-1">
-            <p className="font-serif text-sm font-semibold truncate m-0">{entry.item.title}</p>
+            <p className={`font-serif text-sm font-semibold truncate m-0 ${entry.read ? "text-ink/50" : "text-ink"}`}>{entry.item.title}</p>
             <p className="text-xs text-ink/40 m-0">{entry.item.source}</p>
           </div>
           {editable && (
