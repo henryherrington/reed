@@ -34,17 +34,21 @@ export default async function ListDetailPage({
   if (!list.public && !isOwn) notFound();
 
   const [myEntries, mySave] = await Promise.all([
-    prisma.libraryEntry.findMany({ where: { userId, read: true }, select: { itemId: true } }),
+    prisma.libraryEntry.findMany({ where: { userId }, select: { id: true, itemId: true, read: true } }),
     isOwn ? null : prisma.listSave.findUnique({ where: { userId_listId: { userId, listId: list.id } } }),
   ]);
-  const readItemIds = new Set(myEntries.map((e) => e.itemId));
+  const myEntryByItemId = new Map(myEntries.map((e) => [e.itemId, e]));
 
-  const items = list.items.map((li) => ({
-    id: li.id,
-    note: li.note,
-    read: readItemIds.has(li.itemId),
-    item: { id: li.item.id, title: li.item.title, url: li.item.url, source: li.item.source },
-  }));
+  const items = list.items.map((li) => {
+    const mine = myEntryByItemId.get(li.itemId);
+    return {
+      id: li.id,
+      note: li.note,
+      read: mine?.read ?? false,
+      entryId: mine?.id,
+      item: { id: li.item.id, title: li.item.title, url: li.item.url, source: li.item.source },
+    };
+  });
 
   const listsHref = isOwn ? "/profile/lists" : `/u/${owner.username}/lists`;
 

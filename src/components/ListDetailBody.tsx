@@ -3,14 +3,16 @@
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { updateList, deleteList, addItemToList, removeItemFromList, searchMyLibraryItems } from "@/app/actions";
+import { updateList, deleteList, addItemToList, removeItemFromList, searchMyLibraryItems, toggleRead } from "@/app/actions";
 import { posterColor } from "@/lib/posterColor";
 import SaveListButton from "./SaveListButton";
+import BookStatusIcon from "./BookStatusIcon";
 
 type ListItemRow = {
   id: string;
   note: string | null;
   read: boolean;
+  entryId?: string;
   item: { id: string; title: string; url: string; source: string };
 };
 
@@ -70,6 +72,19 @@ export default function ListDetailBody({
         await addItemToList(list.id, itemId);
         setQuery("");
         setResults([]);
+        router.refresh();
+      } catch (err) {
+        alert(err instanceof Error ? err.message : "Something went wrong");
+      }
+    });
+  }
+
+  function handleReadToggle(e: React.MouseEvent, entryId: string) {
+    e.preventDefault();
+    e.stopPropagation();
+    startTransition(async () => {
+      try {
+        await toggleRead(entryId);
         router.refresh();
       } catch (err) {
         alert(err instanceof Error ? err.message : "Something went wrong");
@@ -243,7 +258,17 @@ export default function ListDetailBody({
                   <p className="text-xs text-ink/30 mt-0.5">{li.item.source}</p>
                 )}
               </Link>
-              {li.read && <span className="text-xs text-[#3f6b4a] shrink-0">✓ read</span>}
+              {li.entryId && (
+                <button
+                  onClick={(e) => handleReadToggle(e, li.entryId as string)}
+                  aria-label={li.read ? "Mark as unread" : "Mark as read"}
+                  title={li.read ? "Read" : "Mark as read"}
+                  className="w-7 h-7 rounded-full bg-white flex items-center justify-center shrink-0"
+                  style={{ color: li.read ? "#20201d" : "#8c8a80", boxShadow: "inset 0 0 0 1px var(--line)" }}
+                >
+                  <BookStatusIcon read={li.read} width={13} height={13} />
+                </button>
+              )}
               {isOwn && (
                 <button
                   onClick={() => removeItem(li.item.id)}
