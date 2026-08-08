@@ -97,9 +97,20 @@ export default async function HomePage({
     <div>
       <Greeting name={firstName} upNextCount={upNext.length} hasLibrary={myLib.length > 0} />
 
-      {upNext.length > 0 && (
-        <Rail title="Up next">
-          {upNext.map((e) => (
+      <Rail title="Up next">
+        {upNext.length === 0 ? (
+          <Link
+            href="/add"
+            style={{ width: 126, aspectRatio: "5/7", border: "1.5px dashed var(--line)" }}
+            className="shrink-0 rounded-md flex flex-col items-center justify-center gap-2 text-ink/40 hover:text-ink hover:bg-white"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            <span className="text-xs px-2 text-center">Add something to read</span>
+          </Link>
+        ) : (
+          upNext.map((e) => (
             <div key={e.id} style={{ width: 126 }} className="shrink-0">
               <PosterCard
                 item={{ id: e.item.id, title: e.item.title, url: e.item.url, source: e.item.source }}
@@ -110,9 +121,9 @@ export default async function HomePage({
                 editable
               />
             </div>
-          ))}
-        </Rail>
-      )}
+          ))
+        )}
+      </Rail>
 
       {savedLists.length > 0 && (
         <Rail title="Saved lists">
