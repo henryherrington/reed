@@ -4,7 +4,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import PosterCard from "@/components/PosterCard";
-import AddItemButton from "@/components/AddItemButton";
 import SortSelect from "@/components/SortSelect";
 import Rail from "@/components/Rail";
 import LibraryGrid from "@/components/LibraryGrid";
@@ -166,13 +165,14 @@ export default async function HomePage({
         <span className="ml-auto text-xs text-ink/40">
           {entries.length} item{entries.length === 1 ? "" : "s"}
         </span>
-        <AddItemButton />
       </div>
 
       {entries.length === 0 ? (
         <div className="text-center py-16 text-ink/40">
           <h3 className="text-ink/60 mb-1">Nothing here</h3>
-          <p>Add something you&apos;ve been meaning to read.</p>
+          <p>
+            Add something you&apos;ve been meaning to read — the <span className="text-lg leading-none">+</span> up top.
+          </p>
         </div>
       ) : (
         <LibraryGrid entries={entries} editable storageKey="reed-view-home" defaultView="table" />
