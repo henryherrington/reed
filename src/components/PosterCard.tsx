@@ -8,6 +8,22 @@ import EyeIcon from "./EyeIcon";
 
 type Item = { id: string; title: string; url: string; source: string };
 
+function PlusIcon() {
+  return (
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round">
+      <path d="M12 5v14M5 12h14" />
+    </svg>
+  );
+}
+
+function BookmarkIcon() {
+  return (
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z" />
+    </svg>
+  );
+}
+
 export default function PosterCard({
   item,
   entryId,
@@ -63,21 +79,25 @@ export default function PosterCard({
         style={{ background: color, aspectRatio: "5/7" }}
         onClick={() => router.push(`/book/${item.id}`)}
       >
-        {showRead && (
-          <div
-            className="absolute top-1.5 right-1.5 w-[22px] h-[22px] rounded-full bg-white/70 flex items-center justify-center"
-            style={{ color: read ? "#3f6b4a" : "#8c8a80" }}
-          >
-            <EyeIcon open={read} width={11} height={11} />
-          </div>
-        )}
-        {showAdd && (
-          <div
-            onClick={inLibrary ? undefined : handleAdd}
-            className="absolute top-1.5 left-1.5 w-[22px] h-[22px] rounded-full bg-white/90 flex items-center justify-center text-sm cursor-pointer"
-            style={{ color: inLibrary ? "#3f6b4a" : "#5a5850" }}
-          >
-            {inLibrary ? "✓" : "+"}
+        {(showRead || showAdd) && (
+          <div className="absolute top-1.5 right-1.5 flex gap-1">
+            {showRead && (
+              <div
+                className="w-[22px] h-[22px] rounded-full bg-white/70 flex items-center justify-center"
+                style={{ color: read ? "#20201d" : "#8c8a80" }}
+              >
+                <EyeIcon open={read} width={11} height={11} />
+              </div>
+            )}
+            {showAdd && (
+              <div
+                onClick={inLibrary ? undefined : handleAdd}
+                className="w-[22px] h-[22px] rounded-full bg-white/70 flex items-center justify-center"
+                style={{ color: inLibrary ? "#20201d" : "#8c8a80", cursor: inLibrary ? "default" : "pointer" }}
+              >
+                {inLibrary ? <BookmarkIcon /> : <PlusIcon />}
+              </div>
+            )}
           </div>
         )}
         <div className="font-serif text-[13px] font-semibold leading-tight line-clamp-5">{item.title}</div>

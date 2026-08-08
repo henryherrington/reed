@@ -217,11 +217,11 @@ export async function unfollow(followingId: string) {
 function revalidateLists(username?: string | null, listId?: string) {
   revalidatePath("/");
   revalidatePath("/profile");
-  revalidatePath("/profile/shelf");
+  revalidatePath("/profile/saved");
   revalidatePath("/profile/lists");
   if (username) {
     revalidatePath(`/u/${username}`);
-    revalidatePath(`/u/${username}/shelf`);
+    revalidatePath(`/u/${username}/saved`);
     revalidatePath(`/u/${username}/lists`);
     if (listId) revalidatePath(`/u/${username}/lists/${listId}`);
   }

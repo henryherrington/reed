@@ -8,7 +8,7 @@ export default function ProfileTabs({ basePath }: { basePath: string }) {
 
   const tabs = [
     { href: basePath, label: "Overview" },
-    { href: `${basePath}/shelf`, label: "Shelf" },
+    { href: `${basePath}/saved`, label: "Saved" },
     { href: `${basePath}/lists`, label: "My Lists" },
   ];
 

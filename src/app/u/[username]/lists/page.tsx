@@ -38,7 +38,7 @@ export default async function FriendListsPage({ params }: { params: { username: 
         isFollowing={!!follow}
         readCount={readCount}
         libraryCount={entries.length}
-        shelfHref={`/u/${user.username}/shelf`}
+        savedHref={`/u/${user.username}/saved`}
       />
       <ProfileTabs basePath={`/u/${user.username}`} />
 

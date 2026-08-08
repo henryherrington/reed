@@ -63,7 +63,7 @@ export default async function BookPage({ params }: { params: { id: string } }) {
           {yourEntry && (
             <div
               className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-white/70 flex items-center justify-center"
-              style={{ color: yourEntry.read ? "#3f6b4a" : "#8c8a80" }}
+              style={{ color: yourEntry.read ? "#20201d" : "#8c8a80" }}
             >
               <EyeIcon open={yourEntry.read} width={12} height={12} />
             </div>

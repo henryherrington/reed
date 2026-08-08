@@ -34,7 +34,7 @@ export default async function ProfilePage() {
 
   return (
     <div>
-      <ProfileHeader user={user} isOwn readCount={readCount} libraryCount={entries.length} shelfHref="/profile/shelf" />
+      <ProfileHeader user={user} isOwn readCount={readCount} libraryCount={entries.length} savedHref="/profile/saved" />
       <ProfileTabs basePath="/profile" />
       <ProfileOverview
         entries={entries}

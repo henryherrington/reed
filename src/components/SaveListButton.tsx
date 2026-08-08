@@ -30,7 +30,7 @@ export default function SaveListButton({ listId, initialSaved }: { listId: strin
       className={`px-4 py-2 rounded-lg text-sm font-medium border ${saved ? "text-ink/50" : "bg-ink text-white border-ink"}`}
       style={{ borderColor: saved ? "var(--line)" : undefined }}
     >
-      {saved ? "Saved to your shelf ✓" : "Save this list"}
+      {saved ? "Saved to your library ✓" : "Save this list"}
     </button>
   );
 }

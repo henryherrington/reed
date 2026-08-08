@@ -30,7 +30,7 @@ export default async function MyListsPage() {
 
   return (
     <div>
-      <ProfileHeader user={user} isOwn readCount={readCount} libraryCount={entries.length} shelfHref="/profile/shelf" />
+      <ProfileHeader user={user} isOwn readCount={readCount} libraryCount={entries.length} savedHref="/profile/saved" />
       <ProfileTabs basePath="/profile" />
 
       <div className="flex items-center justify-between mb-4">

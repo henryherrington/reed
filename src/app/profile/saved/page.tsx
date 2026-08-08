@@ -1,4 +1,4 @@
-import { redirect, notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -9,25 +9,22 @@ import LibraryGrid from "@/components/LibraryGrid";
 
 export const dynamic = "force-dynamic";
 
-export default async function FriendShelfPage({ params }: { params: { username: string } }) {
+export default async function ProfileSavedPage() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) redirect("/signin");
+  const userId = session.user.id;
 
-  const user = await prisma.user.findUnique({ where: { username: params.username } });
-  if (!user) notFound();
-  if (user.id === session.user.id) redirect("/profile/shelf");
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) redirect("/signin");
 
-  const [entries, follow, saves] = await Promise.all([
+  const [entries, saves] = await Promise.all([
     prisma.libraryEntry.findMany({
-      where: { userId: user.id },
+      where: { userId },
       include: { item: true },
       orderBy: { dateAdded: "desc" },
     }),
-    prisma.follow.findUnique({
-      where: { followerId_followingId: { followerId: session.user.id, followingId: user.id } },
-    }),
     prisma.listSave.findMany({
-      where: { userId: user.id },
+      where: { userId },
       orderBy: { createdAt: "desc" },
       include: {
         list: {
@@ -52,23 +49,16 @@ export default async function FriendShelfPage({ params }: { params: { username: 
 
   return (
     <div>
-      <ProfileHeader
-        user={user}
-        isOwn={false}
-        isFollowing={!!follow}
-        readCount={readCount}
-        libraryCount={entries.length}
-        shelfHref={`/u/${user.username}/shelf`}
-      />
-      <ProfileTabs basePath={`/u/${user.username}`} />
+      <ProfileHeader user={user} isOwn readCount={readCount} libraryCount={entries.length} savedHref="/profile/saved" />
+      <ProfileTabs basePath="/profile" />
 
       <SavedListsSection lists={savedLists} />
 
-      <p className="text-xs uppercase tracking-wide text-ink/40 font-semibold mb-1">Shelf</p>
+      <p className="text-xs uppercase tracking-wide text-ink/40 font-semibold mb-1">Library</p>
       {entries.length === 0 ? (
-        <p className="text-sm text-ink/40">Nothing in their library yet.</p>
+        <p className="text-sm text-ink/40">Nothing in your library yet.</p>
       ) : (
-        <LibraryGrid entries={entries} editable={false} storageKey={`reed-view-shelf-${user.id}`} defaultView="table" />
+        <LibraryGrid entries={entries} editable storageKey={`reed-view-shelf-${userId}`} defaultView="table" />
       )}
     </div>
   );

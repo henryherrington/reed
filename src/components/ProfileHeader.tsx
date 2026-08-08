@@ -13,14 +13,14 @@ export default function ProfileHeader({
   isFollowing,
   readCount,
   libraryCount,
-  shelfHref,
+  savedHref,
 }: {
   user: { id: string; name: string | null; username: string | null };
   isOwn: boolean;
   isFollowing?: boolean;
   readCount: number;
   libraryCount: number;
-  shelfHref: string;
+  savedHref: string;
 }) {
   return (
     <div>
@@ -47,7 +47,7 @@ export default function ProfileHeader({
             ) : (
               <p className="text-sm text-ink/40 m-0">{user.username}</p>
             )}
-            <Link href={shelfHref} className="text-sm text-ink/40 hover:text-ink mt-1 inline-block">
+            <Link href={savedHref} className="text-sm text-ink/40 hover:text-ink mt-1 inline-block">
               {readCount} read · {libraryCount} in library
             </Link>
           </div>
