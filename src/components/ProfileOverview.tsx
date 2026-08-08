@@ -75,7 +75,7 @@ export default function ProfileOverview({
                 style={{ aspectRatio: "5/7", boxShadow: "inset 0 0 0 1px var(--line)" }}
               />
             );
-          return <PosterCard key={e.id} item={e.item} entryId={e.id} read={e.read} rating={e.rating} editable={editable} />;
+          return <PosterCard key={e.id} item={e.item} entryId={e.id} read={e.read} rating={e.rating} showRead editable={editable} />;
         })}
       </div>
 

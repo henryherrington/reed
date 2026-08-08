@@ -89,7 +89,7 @@ export default function LibraryGrid({
               entryId={editable ? e.id : undefined}
               read={e.read}
               rating={e.rating}
-              showRead={editable}
+              showRead
               editable={editable}
             />
           ))}

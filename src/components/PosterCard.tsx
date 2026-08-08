@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { toggleRead, rateItem, addToLibrary } from "@/app/actions";
+import { rateItem, addToLibrary } from "@/app/actions";
 import { posterColor } from "@/lib/posterColor";
-import RateModal from "./RateModal";
+import EyeIcon from "./EyeIcon";
 
 type Item = { id: string; title: string; url: string; source: string };
 
@@ -30,23 +30,8 @@ export default function PosterCard({
   avgLabel?: string;
 }) {
   const [, startTransition] = useTransition();
-  const [showRate, setShowRate] = useState(false);
   const color = posterColor(item.id);
   const router = useRouter();
-
-  function handleReadToggle(e: React.MouseEvent) {
-    e.stopPropagation();
-    if (!entryId) return;
-    const willBeRead = !read;
-    startTransition(async () => {
-      try {
-        await toggleRead(entryId);
-        if (willBeRead && rating == null) setShowRate(true);
-      } catch (err) {
-        alert(err instanceof Error ? err.message : "Something went wrong");
-      }
-    });
-  }
 
   function handleAdd(e: React.MouseEvent) {
     e.stopPropagation();
@@ -80,11 +65,10 @@ export default function PosterCard({
       >
         {showRead && (
           <div
-            onClick={handleReadToggle}
-            className="absolute bottom-1.5 left-1.5 w-[22px] h-[22px] rounded-full bg-white/90 flex items-center justify-center text-xs cursor-pointer"
+            className="absolute top-1.5 right-1.5 w-[22px] h-[22px] rounded-full bg-white/70 flex items-center justify-center"
             style={{ color: read ? "#3f6b4a" : "#8c8a80" }}
           >
-            {read ? "✓" : ""}
+            <EyeIcon open={read} width={11} height={11} />
           </div>
         )}
         {showAdd && (
@@ -127,9 +111,6 @@ export default function PosterCard({
           ↗
         </a>
       </div>
-      {showRate && entryId && (
-        <RateModal title={item.title} entryId={entryId} initialRating={rating ?? null} onClose={() => setShowRate(false)} />
-      )}
     </div>
   );
 }
