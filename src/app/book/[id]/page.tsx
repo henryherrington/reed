@@ -62,10 +62,10 @@ export default async function BookPage({ params }: { params: { id: string } }) {
         <div className="relative rounded-md shrink-0 overflow-hidden" style={{ background: color, width: 110, aspectRatio: "5/7" }}>
           {yourEntry && (
             <div
-              className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-white/85 flex items-center justify-center"
-              style={{ color: yourEntry.read ? "#20201d" : "#6b6960" }}
+              className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-white/70 flex items-center justify-center"
+              style={{ color: yourEntry.read ? "#20201d" : "#8c8a80" }}
             >
-              <EyeIcon open={yourEntry.read} width={13} height={13} />
+              <EyeIcon open={yourEntry.read} width={12} height={12} />
             </div>
           )}
         </div>
