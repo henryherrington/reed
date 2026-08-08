@@ -47,8 +47,12 @@ export default async function BookPage({ params }: { params: { id: string } }) {
       }
     : null;
 
-  const reviews = entries.filter((e) => e.rating != null);
-  const avg = reviews.length ? reviews.reduce((s, e) => s + (e.rating || 0), 0) / reviews.length : null;
+  const allReviews = entries.filter((e) => e.rating != null);
+  const yourReview = allReviews.find((e) => e.userId === session.user.id) || null;
+  const reviews = yourReview
+    ? [yourReview, ...allReviews.filter((e) => e.userId !== session.user.id)]
+    : allReviews;
+  const avg = allReviews.length ? allReviews.reduce((s, e) => s + (e.rating || 0), 0) / allReviews.length : null;
   const color = posterColor(item.id);
 
   return (
@@ -97,38 +101,54 @@ export default async function BookPage({ params }: { params: { id: string } }) {
         <p className="text-sm text-ink/40">No one's reviewed this yet.</p>
       ) : (
         <div>
-          {reviews.map((r) => (
-            <Link
-              key={r.id}
-              href={`/review/${r.id}`}
-              className="flex items-start gap-3 py-4 border-b hover:bg-white/60 -mx-2 px-2 rounded-lg"
-              style={{ borderColor: "var(--line)" }}
-            >
+          {reviews.map((r) => {
+            const isOwn = r.userId === session.user.id;
+            return (
               <div
-                className="w-9 h-9 rounded-full flex items-center justify-center text-white font-serif font-semibold text-xs shrink-0"
-                style={{ background: "#b5502f" }}
+                key={r.id}
+                className="flex items-start gap-3 py-4 border-b -mx-2 px-2 rounded-lg"
+                style={{ borderColor: "var(--line)" }}
               >
-                {initialsOf(r.user.name)}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">
-                    {r.user.name}
-                    {r.userId === session.user.id ? " (you)" : ""}
-                  </span>
-                  <div className="flex gap-px">
-                    {[1, 2, 3, 4, 5].map((n) => (
-                      <span key={n} className="text-xs" style={{ color: (r.rating || 0) >= n ? "#c99a3c" : "var(--line)" }}>
-                        ★
-                      </span>
-                    ))}
+                <Link href={`/review/${r.id}`} className="flex items-start gap-3 min-w-0 flex-1 hover:opacity-80">
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center text-white font-serif font-semibold text-xs shrink-0"
+                    style={{ background: "#b5502f" }}
+                  >
+                    {initialsOf(r.user.name)}
                   </div>
-                </div>
-                {r.reviewText && <p className="text-sm text-ink/70 mt-1 line-clamp-2">{r.reviewText}</p>}
-                <div className="text-xs text-ink/40 mt-1">{relTime(r.dateRated)}</div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">
+                        {r.user.name}
+                        {isOwn ? " (you)" : ""}
+                      </span>
+                      <div className="flex gap-px">
+                        {[1, 2, 3, 4, 5].map((n) => (
+                          <span key={n} className="text-xs" style={{ color: (r.rating || 0) >= n ? "#c99a3c" : "var(--line)" }}>
+                            ★
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    {r.reviewText && <p className="text-sm text-ink/70 mt-1 line-clamp-2">{r.reviewText}</p>}
+                    <div className="text-xs text-ink/40 mt-1">{relTime(r.dateRated)}</div>
+                  </div>
+                </Link>
+                {isOwn && (
+                  <Link
+                    href={`/review/${r.id}?edit=1`}
+                    aria-label="Edit your review"
+                    className="w-7 h-7 flex items-center justify-center rounded-full text-ink/40 hover:text-ink hover:bg-bg shrink-0"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 20h9" />
+                      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                    </svg>
+                  </Link>
+                )}
               </div>
-            </Link>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

@@ -6,7 +6,13 @@ import ReviewView from "@/components/ReviewView";
 
 export const dynamic = "force-dynamic";
 
-export default async function ReviewPage({ params }: { params: { id: string } }) {
+export default async function ReviewPage({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams: { edit?: string };
+}) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) redirect("/signin");
 
@@ -26,6 +32,7 @@ export default async function ReviewPage({ params }: { params: { id: string } })
       reviewerName={entry.user.name}
       item={{ id: entry.item.id, title: entry.item.title, url: entry.item.url, source: entry.item.source }}
       isOwn={entry.userId === session.user.id}
+      startInEditing={searchParams.edit === "1"}
     />
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import Link from "next/link";
 import { toggleRead, addToLibrary } from "@/app/actions";
 import RateModal from "./RateModal";
 
@@ -65,16 +64,10 @@ export default function BookHero({ item, yourEntry }: { item: Item; yourEntry: E
         {yourEntry.read ? "✓ Read" : "Mark as read"}
       </button>
 
-      {yourEntry.read && (
+      {yourEntry.read && yourEntry.rating == null && (
         <button onClick={() => setShowRate(true)} className="px-4 py-2 rounded-lg text-sm font-medium border" style={{ borderColor: "var(--line)" }}>
-          {yourEntry.rating ? "Edit your review" : "Rate it"}
+          Rate it
         </button>
-      )}
-
-      {yourEntry.rating != null && (
-        <Link href={`/review/${yourEntry.id}`} className="text-sm text-accent underline">
-          View your review →
-        </Link>
       )}
 
       {showRate && (

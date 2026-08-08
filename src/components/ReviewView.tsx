@@ -13,6 +13,7 @@ type Props = {
   reviewerName: string | null;
   item: { id: string; title: string; url: string; source: string };
   isOwn: boolean;
+  startInEditing?: boolean;
 };
 
 function initialsOf(name?: string | null) {
@@ -20,8 +21,8 @@ function initialsOf(name?: string | null) {
   return name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
 }
 
-export default function ReviewView({ entryId, rating, reviewText, dateRated, reviewerName, item, isOwn }: Props) {
-  const [editing, setEditing] = useState(false);
+export default function ReviewView({ entryId, rating, reviewText, dateRated, reviewerName, item, isOwn, startInEditing }: Props) {
+  const [editing, setEditing] = useState(!!startInEditing && isOwn);
   const [selected, setSelected] = useState(rating);
   const [text, setText] = useState(reviewText || "");
   const [saving, setSaving] = useState(false);
