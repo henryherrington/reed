@@ -8,6 +8,7 @@ import AddItemButton from "@/components/AddItemButton";
 import SortSelect from "@/components/SortSelect";
 import Rail from "@/components/Rail";
 import LibraryGrid from "@/components/LibraryGrid";
+import Greeting from "@/components/Greeting";
 
 export const dynamic = "force-dynamic";
 
@@ -71,8 +72,12 @@ export default async function HomePage({
     .sort((a, b) => b.avg - a.avg || b.count - a.count)
     .slice(0, 10);
 
+  const firstName = (session.user.name || "there").split(" ")[0];
+
   return (
     <div>
+      <Greeting name={firstName} upNextCount={upNext.length} hasLibrary={myLib.length > 0} />
+
       {upNext.length > 0 && (
         <Rail title="Up next">
           {upNext.map((e) => (
