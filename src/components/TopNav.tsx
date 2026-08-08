@@ -24,20 +24,24 @@ export default async function TopNav() {
           <h1 className="font-serif text-lg font-semibold m-0">Reed</h1>
         </Link>
 
-        {session && <NavLinks />}
+        {session && (
+          <div className="flex items-center gap-5 flex-1">
+            <NavLinks />
+            <Link
+              href="/add"
+              aria-label="Add to your library"
+              className="w-7 h-7 flex items-center justify-center rounded-full text-ink/50 hover:text-ink hover:bg-white text-xl leading-none"
+            >
+              +
+            </Link>
+          </div>
+        )}
 
         {session && <SearchBar />}
 
         <div className="flex items-center gap-3 shrink-0 ml-auto">
           {session?.user ? (
             <>
-              <Link
-                href="/add"
-                aria-label="Add to your library"
-                className="w-8 h-8 flex items-center justify-center rounded-full text-ink/50 hover:text-ink hover:bg-white text-xl leading-none"
-              >
-                +
-              </Link>
               <Link href="/profile" className="flex items-center gap-2">
                 <div
                   className="w-8 h-8 rounded-full flex items-center justify-center text-white font-serif font-semibold text-[13px] shrink-0"
