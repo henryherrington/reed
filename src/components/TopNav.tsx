@@ -27,11 +27,7 @@ export default async function TopNav() {
         {session && (
           <div className="flex items-center gap-5 flex-1">
             <NavLinks />
-            <Link
-              href="/add"
-              aria-label="Add to your library"
-              className="w-7 h-7 flex items-center justify-center rounded-full text-ink/50 hover:text-ink hover:bg-white text-xl leading-none"
-            >
+            <Link href="/add" aria-label="Add to your library" className="text-base font-medium text-ink/50 hover:text-ink leading-none">
               +
             </Link>
           </div>
