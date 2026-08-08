@@ -7,6 +7,7 @@ import PosterCard from "@/components/PosterCard";
 import AddItemButton from "@/components/AddItemButton";
 import SortSelect from "@/components/SortSelect";
 import Rail from "@/components/Rail";
+import LibraryGrid from "@/components/LibraryGrid";
 
 export const dynamic = "force-dynamic";
 
@@ -134,19 +135,7 @@ export default async function HomePage({
           <p>Add something you&apos;ve been meaning to read.</p>
         </div>
       ) : (
-        <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(126px, 1fr))" }}>
-          {entries.map((e) => (
-            <PosterCard
-              key={e.id}
-              item={{ id: e.item.id, title: e.item.title, url: e.item.url, source: e.item.source }}
-              entryId={e.id}
-              read={e.read}
-              rating={e.read ? e.rating : null}
-              showRead
-              editable
-            />
-          ))}
-        </div>
+        <LibraryGrid entries={entries} editable storageKey="reed-view-home" defaultView="table" />
       )}
     </div>
   );

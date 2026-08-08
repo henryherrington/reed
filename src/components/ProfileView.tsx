@@ -4,6 +4,7 @@ import EditUsername from "./EditUsername";
 import FavoritesPicker from "./FavoritesPicker";
 import Heatmap from "./Heatmap";
 import FollowButton from "./FollowButton";
+import LibraryGrid from "./LibraryGrid";
 
 type Entry = {
   id: string;
@@ -146,20 +147,8 @@ export default function ProfileView({
         )}
       </div>
 
-      <p className="text-xs uppercase tracking-wide text-ink/40 font-semibold mb-3">Shelf</p>
-      <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(126px, 1fr))" }}>
-        {entries.map((e) => (
-          <PosterCard
-            key={e.id}
-            item={e.item}
-            entryId={editable ? e.id : undefined}
-            read={e.read}
-            rating={e.read ? e.rating : null}
-            showRead={editable}
-            editable={editable}
-          />
-        ))}
-      </div>
+      <p className="text-xs uppercase tracking-wide text-ink/40 font-semibold mb-1">Shelf</p>
+      <LibraryGrid entries={entries} editable={editable} storageKey={`reed-view-shelf-${user.id}`} defaultView="table" />
     </div>
   );
 }
