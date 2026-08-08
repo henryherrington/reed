@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import SignOutButton from "./SignOutButton";
+import NavLinks from "./NavLinks";
 
 function initialsOf(name?: string | null) {
   if (!name) return "?";
@@ -22,6 +23,8 @@ export default async function TopNav() {
           <h1 className="font-serif text-lg font-semibold m-0">Reed</h1>
         </Link>
 
+        {session && <NavLinks />}
+
         <div className="flex items-center gap-3 shrink-0 ml-auto">
           {session?.user ? (
             <>
@@ -32,7 +35,7 @@ export default async function TopNav() {
                 >
                   {initialsOf(session.user.name)}
                 </div>
-                <span className="text-sm text-ink/60 hover:text-ink hidden sm:inline">@{session.user.username}</span>
+                <span className="text-sm text-ink/70 hover:text-ink underline hidden sm:inline">{session.user.username}</span>
               </Link>
               <SignOutButton />
             </>

@@ -15,7 +15,6 @@ function revalidateAll(itemId?: string, entryId?: string) {
   revalidatePath("/");
   revalidatePath("/profile");
   revalidatePath("/activity");
-  revalidatePath("/popular");
   if (itemId) revalidatePath(`/book/${itemId}`);
   if (entryId) revalidatePath(`/review/${entryId}`);
 }
@@ -137,6 +136,36 @@ export async function togglePin(entryId: string) {
   revalidateAll(entry.itemId, entryId);
 }
 
+export async function searchUsers(query: string) {
+  const userId = await requireUserId();
+  const q = query.trim();
+  if (!q) return [];
+
+  return prisma.user.findMany({
+    where: {
+      id: { not: userId },
+      username: { contains: q, mode: "insensitive" },
+    },
+    select: { id: true, name: true, username: true },
+    orderBy: { username: "asc" },
+    take: 8,
+  });
+}
+
+export async function followUser(targetUserId: string) {
+  const userId = await requireUserId();
+  if (targetUserId === userId) throw new Error("That's you.");
+
+  await prisma.follow.upsert({
+    where: { followerId_followingId: { followerId: userId, followingId: targetUserId } },
+    update: {},
+    create: { followerId: userId, followingId: targetUserId },
+  });
+
+  revalidatePath("/activity");
+  revalidatePath("/");
+}
+
 export async function followByEmail(email: string) {
   const userId = await requireUserId();
   const target = await prisma.user.findUnique({ where: { email } });
@@ -150,7 +179,6 @@ export async function followByEmail(email: string) {
   });
 
   revalidatePath("/activity");
-  revalidatePath("/popular");
 }
 
 export async function unfollow(followingId: string) {
@@ -158,5 +186,5 @@ export async function unfollow(followingId: string) {
   await prisma.follow.deleteMany({ where: { followerId: userId, followingId } });
 
   revalidatePath("/activity");
-  revalidatePath("/popular");
+  revalidatePath("/");
 }

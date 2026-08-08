@@ -27,14 +27,13 @@ export default function EditUsername({ initial }: { initial: string }) {
   if (!editing) {
     return (
       <button onClick={() => setEditing(true)} className="text-sm text-ink/40 hover:text-ink">
-        @{initial} <span className="underline">edit</span>
+        {initial} <span className="underline">edit</span>
       </button>
     );
   }
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-sm text-ink/40">@</span>
       <input
         autoFocus
         value={value}
