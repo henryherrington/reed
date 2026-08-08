@@ -15,11 +15,16 @@ export default async function FriendProfilePage({ params }: { params: { username
 
   if (user.id === session.user.id) redirect("/profile");
 
-  const entries = await prisma.libraryEntry.findMany({
-    where: { userId: user.id },
-    include: { item: true },
-    orderBy: { dateAdded: "desc" },
-  });
+  const [entries, follow] = await Promise.all([
+    prisma.libraryEntry.findMany({
+      where: { userId: user.id },
+      include: { item: true },
+      orderBy: { dateAdded: "desc" },
+    }),
+    prisma.follow.findUnique({
+      where: { followerId_followingId: { followerId: session.user.id, followingId: user.id } },
+    }),
+  ]);
 
-  return <ProfileView user={user} entries={entries} editable={false} isOwn={false} />;
+  return <ProfileView user={user} entries={entries} editable={false} isOwn={false} isFollowing={!!follow} />;
 }

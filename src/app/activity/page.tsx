@@ -3,7 +3,6 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import FollowSearch from "@/components/FollowSearch";
 
 export const dynamic = "force-dynamic";
 
@@ -30,7 +29,7 @@ export default async function ActivityPage() {
 
   const follows = await prisma.follow.findMany({
     where: { followerId: userId },
-    include: { following: { select: { id: true, name: true, username: true } } },
+    select: { followingId: true },
   });
   const scopeIds = [userId, ...follows.map((f) => f.followingId)];
 
@@ -43,12 +42,10 @@ export default async function ActivityPage() {
 
   return (
     <div>
-      <FollowSearch following={follows.map((f) => f.following)} />
-
       {events.length === 0 ? (
         <div className="text-center py-16 text-ink/40">
           <h3 className="text-ink/60 mb-1">No activity yet</h3>
-          <p>Rate something, or find people to follow above.</p>
+          <p>Rate something, or search for people to follow up top.</p>
         </div>
       ) : (
         <div>

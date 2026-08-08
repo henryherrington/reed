@@ -152,6 +152,31 @@ export async function searchUsers(query: string) {
   });
 }
 
+export async function globalSearch(query: string) {
+  const userId = await requireUserId();
+  const q = query.trim();
+  if (!q) return { users: [], items: [] };
+
+  const [users, items] = await Promise.all([
+    prisma.user.findMany({
+      where: {
+        id: { not: userId },
+        OR: [{ username: { contains: q, mode: "insensitive" } }, { name: { contains: q, mode: "insensitive" } }],
+      },
+      select: { id: true, name: true, username: true },
+      orderBy: { username: "asc" },
+      take: 5,
+    }),
+    prisma.item.findMany({
+      where: { title: { contains: q, mode: "insensitive" } },
+      orderBy: { title: "asc" },
+      take: 5,
+    }),
+  ]);
+
+  return { users, items };
+}
+
 export async function followUser(targetUserId: string) {
   const userId = await requireUserId();
   if (targetUserId === userId) throw new Error("That's you.");

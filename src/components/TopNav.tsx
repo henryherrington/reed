@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import SignOutButton from "./SignOutButton";
 import NavLinks from "./NavLinks";
+import SearchBar from "./SearchBar";
 
 function initialsOf(name?: string | null) {
   if (!name) return "?";
@@ -24,6 +25,8 @@ export default async function TopNav() {
         </Link>
 
         {session && <NavLinks />}
+
+        {session && <SearchBar />}
 
         <div className="flex items-center gap-3 shrink-0 ml-auto">
           {session?.user ? (
