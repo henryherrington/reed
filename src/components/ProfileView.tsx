@@ -26,8 +26,6 @@ export default function ProfileView({
   editable: boolean;
   isOwn: boolean;
 }) {
-  const pinned = entries.filter((e) => e.pinned);
-
   return (
     <div>
       {!isOwn && (
@@ -58,33 +56,6 @@ export default function ProfileView({
         </div>
       </div>
 
-      <p className="text-xs uppercase tracking-wide text-ink/40 font-semibold mb-3">Top 4</p>
-      <div className="grid grid-cols-4 gap-4 mb-8 max-w-lg">
-        {[0, 1, 2, 3].map((i) => {
-          const e = pinned[i];
-          if (!e)
-            return (
-              <div
-                key={i}
-                className="rounded-md bg-white"
-                style={{ aspectRatio: "5/7", boxShadow: "inset 0 0 0 1px var(--line)" }}
-              />
-            );
-          return (
-            <PosterCard
-              key={e.id}
-              item={e.item}
-              entryId={e.id}
-              read={e.read}
-              rating={e.rating}
-              pinned={e.pinned}
-              showPin={editable}
-              editable={editable}
-            />
-          );
-        })}
-      </div>
-
       <p className="text-xs uppercase tracking-wide text-ink/40 font-semibold mb-3">Shelf</p>
       <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(126px, 1fr))" }}>
         {entries.map((e) => (
@@ -94,9 +65,7 @@ export default function ProfileView({
             entryId={editable ? e.id : undefined}
             read={e.read}
             rating={e.read ? e.rating : null}
-            pinned={e.pinned}
             showRead={editable}
-            showPin={editable && e.read}
             editable={editable}
           />
         ))}

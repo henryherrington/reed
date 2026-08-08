@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { toggleRead, togglePin, addToLibrary } from "@/app/actions";
+import { toggleRead, addToLibrary } from "@/app/actions";
 import RateModal from "./RateModal";
 
 type Item = { id: string; title: string; url: string; source: string };
@@ -10,7 +10,6 @@ type Entry = {
   id: string;
   read: boolean;
   rating: number | null;
-  pinned: boolean;
   reviewText: string | null;
 };
 
@@ -44,19 +43,6 @@ export default function BookHero({ item, yourEntry }: { item: Item; yourEntry: E
     });
   }
 
-  function handleTogglePin() {
-    if (!yourEntry) return;
-    setBusy(true);
-    startTransition(async () => {
-      try {
-        await togglePin(yourEntry.id);
-      } catch (err) {
-        alert(err instanceof Error ? err.message : "Something went wrong");
-      }
-      setBusy(false);
-    });
-  }
-
   if (!yourEntry) {
     return (
       <button onClick={handleAdd} disabled={busy} className="px-4 py-2 rounded-lg bg-ink text-white text-sm font-medium">
@@ -82,18 +68,6 @@ export default function BookHero({ item, yourEntry }: { item: Item; yourEntry: E
       {yourEntry.read && (
         <button onClick={() => setShowRate(true)} className="px-4 py-2 rounded-lg text-sm font-medium border" style={{ borderColor: "var(--line)" }}>
           {yourEntry.rating ? "Edit your review" : "Rate it"}
-        </button>
-      )}
-
-      {yourEntry.read && (
-        <button
-          onClick={handleTogglePin}
-          disabled={busy}
-          className="text-sm"
-          style={{ color: yourEntry.pinned ? "#c99a3c" : "#8c8a80" }}
-          title="Pin to your top 4"
-        >
-          {yourEntry.pinned ? "★ Pinned" : "☆ Pin"}
         </button>
       )}
 

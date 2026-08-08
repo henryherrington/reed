@@ -43,7 +43,6 @@ export default async function BookPage({ params }: { params: { id: string } }) {
         id: yourEntryRaw.id,
         read: yourEntryRaw.read,
         rating: yourEntryRaw.rating,
-        pinned: yourEntryRaw.pinned,
         reviewText: yourEntryRaw.reviewText,
       }
     : null;

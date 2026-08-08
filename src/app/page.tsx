@@ -73,9 +73,7 @@ export default async function HomePage({
               entryId={e.id}
               read={e.read}
               rating={e.read ? e.rating : null}
-              pinned={e.pinned}
               showRead
-              showPin={e.read}
               editable
             />
           ))}

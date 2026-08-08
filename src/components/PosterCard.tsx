@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { toggleRead, togglePin, rateItem, addToLibrary } from "@/app/actions";
+import { toggleRead, rateItem, addToLibrary } from "@/app/actions";
 import { posterColor } from "@/lib/posterColor";
 import RateModal from "./RateModal";
 
@@ -13,9 +13,7 @@ export default function PosterCard({
   entryId,
   read = false,
   rating = null,
-  pinned = false,
   showRead = false,
-  showPin = false,
   showAdd = false,
   inLibrary = false,
   editable = false,
@@ -25,9 +23,7 @@ export default function PosterCard({
   entryId?: string;
   read?: boolean;
   rating?: number | null;
-  pinned?: boolean;
   showRead?: boolean;
-  showPin?: boolean;
   showAdd?: boolean;
   inLibrary?: boolean;
   editable?: boolean;
@@ -46,18 +42,6 @@ export default function PosterCard({
       try {
         await toggleRead(entryId);
         if (willBeRead && rating == null) setShowRate(true);
-      } catch (err) {
-        alert(err instanceof Error ? err.message : "Something went wrong");
-      }
-    });
-  }
-
-  function handlePin(e: React.MouseEvent) {
-    e.stopPropagation();
-    if (!entryId) return;
-    startTransition(async () => {
-      try {
-        await togglePin(entryId);
       } catch (err) {
         alert(err instanceof Error ? err.message : "Something went wrong");
       }
@@ -94,15 +78,6 @@ export default function PosterCard({
         style={{ background: color, aspectRatio: "5/7" }}
         onClick={() => router.push(`/book/${item.id}`)}
       >
-        {showPin && (
-          <div
-            onClick={handlePin}
-            className="absolute top-1.5 right-1.5 w-[22px] h-[22px] rounded-full bg-white/90 flex items-center justify-center text-xs cursor-pointer"
-            style={{ color: pinned ? "#c99a3c" : "#8c8a80" }}
-          >
-            {pinned ? "★" : "☆"}
-          </div>
-        )}
         {showRead && (
           <div
             onClick={handleReadToggle}
