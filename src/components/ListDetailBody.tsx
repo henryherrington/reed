@@ -24,6 +24,7 @@ export default function ListDetailBody({
   ownerUsername,
   savesCount,
   listsHref,
+  startInEditing,
 }: {
   list: { id: string; title: string; description: string | null; public: boolean };
   items: ListItemRow[];
@@ -32,11 +33,12 @@ export default function ListDetailBody({
   ownerUsername: string | null;
   savesCount: number;
   listsHref: string;
+  startInEditing?: boolean;
 }) {
   const [, startTransition] = useTransition();
   const router = useRouter();
 
-  const [editing, setEditing] = useState(false);
+  const [editing, setEditing] = useState(!!startInEditing && isOwn);
   const [title, setTitle] = useState(list.title);
   const [description, setDescription] = useState(list.description || "");
   const [isPublic, setIsPublic] = useState(list.public);
@@ -87,6 +89,7 @@ export default function ListDetailBody({
   }
 
   async function saveEdit() {
+    if (!title.trim()) return;
     setSaving(true);
     try {
       await updateList(list.id, { title, description, public: isPublic });
@@ -96,6 +99,13 @@ export default function ListDetailBody({
       alert(err instanceof Error ? err.message : "Something went wrong");
     }
     setSaving(false);
+  }
+
+  function cancelEdit() {
+    setTitle(list.title);
+    setDescription(list.description || "");
+    setIsPublic(list.public);
+    setEditing(false);
   }
 
   async function handleDelete() {
@@ -116,66 +126,72 @@ export default function ListDetailBody({
         ← Lists
       </Link>
 
-      <div className="flex items-start justify-between gap-4 mb-2">
-        <h1 className="font-serif text-2xl font-semibold m-0">{list.title}</h1>
-        {isOwn ? (
-          <div className="flex gap-2 shrink-0">
-            <button onClick={() => setEditing(true)} className="text-sm text-accent underline">
-              Edit
+      {editing ? (
+        <div className="mb-8">
+          <input
+            autoFocus
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="List title"
+            className="w-full font-serif text-2xl font-semibold mb-3 px-0 py-1 bg-transparent border-0 border-b focus:outline-none"
+            style={{ borderColor: "var(--line)" }}
+          />
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="What's this list about? Write as much as you'd like — this is the place to lay out your thinking."
+            rows={7}
+            className="w-full px-3 py-2.5 rounded-lg border text-[15px] leading-relaxed resize-none mb-3"
+            style={{ borderColor: "var(--line)" }}
+          />
+          <label className="flex items-center gap-2 text-sm text-ink/60 mb-5">
+            <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />
+            Public — visible on your profile
+          </label>
+          <div className="flex items-center gap-2.5">
+            <button onClick={saveEdit} disabled={saving || !title.trim()} className="px-4 py-2 rounded-lg text-sm bg-ink text-white">
+              Save
             </button>
-            <button onClick={handleDelete} className="text-sm text-ink/40 hover:text-ink underline">
-              Delete
+            <button onClick={cancelEdit} className="px-4 py-2 rounded-lg text-sm border" style={{ borderColor: "var(--line)" }}>
+              Cancel
             </button>
-          </div>
-        ) : (
-          <div className="shrink-0">
-            <SaveListButton listId={list.id} initialSaved={isSaved} />
-          </div>
-        )}
-      </div>
-
-      {list.description && <p className="text-[15px] text-ink/70 mb-3 whitespace-pre-wrap">{list.description}</p>}
-
-      <div className="text-xs text-ink/40 mb-8">
-        {ownerUsername && !isOwn ? `${ownerUsername} · ` : ""}
-        {items.length} item{items.length === 1 ? "" : "s"}
-        {savesCount > 0 ? ` · saved by ${savesCount}` : ""}
-        {isOwn && !list.public ? " · private" : ""}
-      </div>
-
-      {editing && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-5" onClick={() => setEditing(false)}>
-          <div className="bg-white rounded-2xl p-7 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-semibold mb-4">Edit list</h2>
-            <input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Title"
-              className="w-full px-3 py-2 rounded-lg border text-sm mb-3"
-              style={{ borderColor: "var(--line)" }}
-            />
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Description (optional)"
-              rows={3}
-              className="w-full px-3 py-2 rounded-lg border text-sm resize-none mb-3"
-              style={{ borderColor: "var(--line)" }}
-            />
-            <label className="flex items-center gap-2 text-sm text-ink/60 mb-5">
-              <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />
-              Public — visible on your profile
-            </label>
-            <div className="flex justify-end gap-2.5">
-              <button onClick={() => setEditing(false)} className="px-4 py-2 rounded-lg text-sm border" style={{ borderColor: "var(--line)" }}>
-                Cancel
-              </button>
-              <button onClick={saveEdit} disabled={saving || !title.trim()} className="px-4 py-2 rounded-lg text-sm bg-ink text-white">
-                Save
-              </button>
-            </div>
+            <button onClick={handleDelete} className="ml-auto text-sm text-ink/40 hover:text-ink underline">
+              Delete list
+            </button>
           </div>
         </div>
+      ) : (
+        <>
+          <div className="flex items-start justify-between gap-4 mb-2">
+            <h1 className="font-serif text-2xl font-semibold m-0">{list.title}</h1>
+            {isOwn ? (
+              <button onClick={() => setEditing(true)} className="text-sm text-accent underline shrink-0">
+                Edit
+              </button>
+            ) : (
+              <div className="shrink-0">
+                <SaveListButton listId={list.id} initialSaved={isSaved} />
+              </div>
+            )}
+          </div>
+
+          {list.description ? (
+            <p className="text-[15px] text-ink/70 mb-3 whitespace-pre-wrap">{list.description}</p>
+          ) : (
+            isOwn && (
+              <button onClick={() => setEditing(true)} className="text-sm text-ink/40 hover:text-ink underline mb-3">
+                Add a description
+              </button>
+            )
+          )}
+
+          <div className="text-xs text-ink/40 mb-8">
+            {ownerUsername && !isOwn ? `${ownerUsername} · ` : ""}
+            {items.length} item{items.length === 1 ? "" : "s"}
+            {savesCount > 0 ? ` · saved by ${savesCount}` : ""}
+            {isOwn && !list.public ? " · private" : ""}
+          </div>
+        </>
       )}
 
       {isOwn && (

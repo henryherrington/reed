@@ -6,7 +6,13 @@ import ListDetailBody from "@/components/ListDetailBody";
 
 export const dynamic = "force-dynamic";
 
-export default async function ListDetailPage({ params }: { params: { username: string; listId: string } }) {
+export default async function ListDetailPage({
+  params,
+  searchParams,
+}: {
+  params: { username: string; listId: string };
+  searchParams: { edit?: string };
+}) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) redirect("/signin");
   const userId = session.user.id;
@@ -51,6 +57,7 @@ export default async function ListDetailPage({ params }: { params: { username: s
       ownerUsername={owner.username}
       savesCount={list._count.saves}
       listsHref={listsHref}
+      startInEditing={searchParams.edit === "1"}
     />
   );
 }
