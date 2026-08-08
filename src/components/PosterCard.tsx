@@ -10,7 +10,7 @@ type Item = { id: string; title: string; url: string; source: string };
 
 function PlusIcon() {
   return (
-    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round">
       <path d="M12 5v14M5 12h14" />
     </svg>
   );
@@ -18,7 +18,7 @@ function PlusIcon() {
 
 function BookmarkIcon() {
   return (
-    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
       <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z" />
     </svg>
   );
@@ -83,17 +83,17 @@ export default function PosterCard({
           <div className="absolute top-1.5 right-1.5 flex gap-1">
             {showRead && (
               <div
-                className="w-[22px] h-[22px] rounded-full bg-white/70 flex items-center justify-center"
-                style={{ color: read ? "#20201d" : "#8c8a80" }}
+                className="w-6 h-6 rounded-full bg-white/85 flex items-center justify-center"
+                style={{ color: read ? "#20201d" : "#6b6960" }}
               >
-                <EyeIcon open={read} width={11} height={11} />
+                <EyeIcon open={read} width={13} height={13} />
               </div>
             )}
             {showAdd && (
               <div
                 onClick={inLibrary ? undefined : handleAdd}
-                className="w-[22px] h-[22px] rounded-full bg-white/70 flex items-center justify-center"
-                style={{ color: inLibrary ? "#20201d" : "#8c8a80", cursor: inLibrary ? "default" : "pointer" }}
+                className="w-6 h-6 rounded-full bg-white/85 flex items-center justify-center"
+                style={{ color: inLibrary ? "#20201d" : "#6b6960", cursor: inLibrary ? "default" : "pointer" }}
               >
                 {inLibrary ? <BookmarkIcon /> : <PlusIcon />}
               </div>
