@@ -6,14 +6,15 @@ export default function BookStatusIcon({ read, width = 16, height = 16 }: Props)
       width={width}
       height={height}
       viewBox="0 0 24 24"
-      fill={read ? "currentColor" : "none"}
+      fill="none"
       stroke="currentColor"
       strokeWidth={1.8}
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <path d="M6.5 3H20v18H6.5A2.5 2.5 0 0 1 4 18.5v-13A2.5 2.5 0 0 1 6.5 3Z" />
-      <path d="M4 18.5A2.5 2.5 0 0 1 6.5 16H20" fill="none" />
+      {read && <rect x="4" y="3" width="16" height="13.5" rx="2" stroke="none" fill="currentColor" fillOpacity={0.32} />}
+      <rect x="4" y="3" width="16" height="18" rx="2" />
+      <path d="M4 16.5h16" />
     </svg>
   );
 }
