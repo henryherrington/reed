@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { rateItem } from "@/app/actions";
 import { posterColor } from "@/lib/posterColor";
 
 type Props = {
   entryId: string;
-  rating: number;
+  rating: number | null;
   reviewText: string | null;
   dateRated: string | null;
   reviewerName: string | null;
@@ -22,13 +23,15 @@ function initialsOf(name?: string | null) {
 }
 
 export default function ReviewView({ entryId, rating, reviewText, dateRated, reviewerName, item, isOwn, startInEditing }: Props) {
-  const [editing, setEditing] = useState(!!startInEditing && isOwn);
-  const [selected, setSelected] = useState(rating);
+  const [editing, setEditing] = useState((!!startInEditing || rating == null) && isOwn);
+  const [selected, setSelected] = useState(rating || 0);
   const [text, setText] = useState(reviewText || "");
   const [saving, setSaving] = useState(false);
+  const router = useRouter();
   const color = posterColor(item.id);
 
   async function save() {
+    if (!selected) return;
     setSaving(true);
     try {
       await rateItem(entryId, selected, text.trim());
@@ -37,6 +40,16 @@ export default function ReviewView({ entryId, rating, reviewText, dateRated, rev
       alert(err instanceof Error ? err.message : "Something went wrong");
     }
     setSaving(false);
+  }
+
+  function cancel() {
+    if (rating == null) {
+      router.push(`/book/${item.id}`);
+      return;
+    }
+    setSelected(rating);
+    setText(reviewText || "");
+    setEditing(false);
   }
 
   return (
@@ -92,10 +105,10 @@ export default function ReviewView({ entryId, rating, reviewText, dateRated, rev
             style={{ borderColor: "var(--line)" }}
           />
           <div className="flex gap-2.5">
-            <button onClick={() => setEditing(false)} className="px-4 py-2 rounded-lg text-sm border" style={{ borderColor: "var(--line)" }}>
+            <button onClick={cancel} className="px-4 py-2 rounded-lg text-sm border" style={{ borderColor: "var(--line)" }}>
               Cancel
             </button>
-            <button onClick={save} disabled={saving} className="px-4 py-2 rounded-lg text-sm bg-ink text-white">
+            <button onClick={save} disabled={saving || !selected} className="px-4 py-2 rounded-lg text-sm bg-ink text-white">
               Save
             </button>
           </div>
@@ -104,7 +117,7 @@ export default function ReviewView({ entryId, rating, reviewText, dateRated, rev
         <div>
           <div className="flex gap-1 mb-3">
             {[1, 2, 3, 4, 5].map((n) => (
-              <span key={n} className="text-xl" style={{ color: rating >= n ? "#c99a3c" : "var(--line)" }}>
+              <span key={n} className="text-xl" style={{ color: (rating ?? 0) >= n ? "#c99a3c" : "var(--line)" }}>
                 ★
               </span>
             ))}

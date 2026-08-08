@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { toggleRead, addToLibrary } from "@/app/actions";
-import RateModal from "./RateModal";
 
 type Item = { id: string; title: string; url: string; source: string };
 type Entry = {
@@ -15,7 +15,6 @@ type Entry = {
 export default function BookHero({ item, yourEntry }: { item: Item; yourEntry: Entry | null }) {
   const [, startTransition] = useTransition();
   const [busy, setBusy] = useState(false);
-  const [showRate, setShowRate] = useState(false);
 
   function handleAdd() {
     setBusy(true);
@@ -65,19 +64,13 @@ export default function BookHero({ item, yourEntry }: { item: Item; yourEntry: E
       </button>
 
       {yourEntry.read && yourEntry.rating == null && (
-        <button onClick={() => setShowRate(true)} className="px-4 py-2 rounded-lg text-sm font-medium border" style={{ borderColor: "var(--line)" }}>
+        <Link
+          href={`/review/${yourEntry.id}`}
+          className="px-4 py-2 rounded-lg text-sm font-medium border"
+          style={{ borderColor: "var(--line)" }}
+        >
           Rate it
-        </button>
-      )}
-
-      {showRate && (
-        <RateModal
-          title={item.title}
-          entryId={yourEntry.id}
-          initialRating={yourEntry.rating}
-          initialReviewText={yourEntry.reviewText}
-          onClose={() => setShowRate(false)}
-        />
+        </Link>
       )}
     </div>
   );

@@ -21,7 +21,9 @@ export default async function ReviewPage({
     include: { item: true, user: true },
   });
 
-  if (!entry || entry.rating == null) notFound();
+  if (!entry) notFound();
+  const isOwn = entry.userId === session.user.id;
+  if (entry.rating == null && !isOwn) notFound();
 
   return (
     <ReviewView
@@ -31,7 +33,7 @@ export default async function ReviewPage({
       dateRated={entry.dateRated ? entry.dateRated.toISOString() : null}
       reviewerName={entry.user.name}
       item={{ id: entry.item.id, title: entry.item.title, url: entry.item.url, source: entry.item.source }}
-      isOwn={entry.userId === session.user.id}
+      isOwn={isOwn}
       startInEditing={searchParams.edit === "1"}
     />
   );
