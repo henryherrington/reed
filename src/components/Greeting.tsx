@@ -33,11 +33,8 @@ export default function Greeting({
       : "Let's find your first read.";
 
   return (
-    <div className="mb-8">
-      <h1 className="font-serif text-3xl font-semibold mb-1.5">
-        {greeting || "Hi"}, {name}.
-      </h1>
-      <p className="text-ink/50">{subtitle}</p>
-    </div>
+    <p className="mb-8 text-lg text-ink/70">
+      {greeting || "Hi"}, {name}. {subtitle}
+    </p>
   );
 }
