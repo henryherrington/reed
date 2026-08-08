@@ -3,7 +3,9 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { posterColor } from "@/lib/posterColor";
 import BookHero from "@/components/BookHero";
+import EyeIcon from "@/components/EyeIcon";
 
 export const dynamic = "force-dynamic";
 
@@ -52,11 +54,21 @@ export default async function BookPage({ params }: { params: { id: string } }) {
     ? [yourReview, ...allReviews.filter((e) => e.userId !== session.user.id)]
     : allReviews;
   const avg = allReviews.length ? allReviews.reduce((s, e) => s + (e.rating || 0), 0) / allReviews.length : null;
+  const color = posterColor(item.id);
 
   return (
     <div>
       <div className="flex gap-6 mb-8">
-        <BookHero item={item} yourEntry={yourEntry} />
+        <div className="relative rounded-md shrink-0 overflow-hidden" style={{ background: color, width: 110, aspectRatio: "5/7" }}>
+          {yourEntry && (
+            <div
+              className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-white/70 flex items-center justify-center"
+              style={{ color: yourEntry.read ? "#3f6b4a" : "#8c8a80" }}
+            >
+              <EyeIcon open={yourEntry.read} width={12} height={12} />
+            </div>
+          )}
+        </div>
         <div className="min-w-0">
           <h1 className="font-serif text-2xl font-semibold mb-1">{item.title}</h1>
           <a
@@ -86,6 +98,8 @@ export default async function BookPage({ params }: { params: { id: string } }) {
               <span className="text-sm text-ink/40">No ratings yet</span>
             )}
           </div>
+
+          <BookHero item={item} yourEntry={yourEntry} />
         </div>
       </div>
 
