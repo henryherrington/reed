@@ -25,12 +25,14 @@ export default async function TopNav() {
         <div className="flex items-center gap-3 shrink-0 ml-auto">
           {session?.user ? (
             <>
-              <Link
-                href="/profile"
-                className="w-8 h-8 rounded-full flex items-center justify-center text-white font-serif font-semibold text-[13px]"
-                style={{ background: "#b5502f" }}
-              >
-                {initialsOf(session.user.name)}
+              <Link href="/profile" className="flex items-center gap-2">
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-white font-serif font-semibold text-[13px] shrink-0"
+                  style={{ background: "#b5502f" }}
+                >
+                  {initialsOf(session.user.name)}
+                </div>
+                <span className="text-sm text-ink/60 hover:text-ink hidden sm:inline">@{session.user.username}</span>
               </Link>
               <SignOutButton />
             </>

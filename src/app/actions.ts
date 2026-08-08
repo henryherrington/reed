@@ -20,6 +20,26 @@ function revalidateAll(itemId?: string, entryId?: string) {
   if (entryId) revalidatePath(`/review/${entryId}`);
 }
 
+export async function updateUsername(raw: string) {
+  const userId = await requireUserId();
+  const username = raw.trim().toLowerCase();
+
+  if (!/^[a-z0-9_-]{3,24}$/.test(username)) {
+    throw new Error("Usernames are 3-24 characters: lowercase letters, numbers, - or _ only.");
+  }
+
+  try {
+    await prisma.user.update({ where: { id: userId }, data: { username } });
+  } catch (err) {
+    const code = (err as { code?: string })?.code;
+    if (code === "P2002") throw new Error("That username is taken.");
+    throw err;
+  }
+
+  revalidatePath("/", "layout");
+  revalidatePath("/profile");
+}
+
 export async function searchItems(query: string) {
   await requireUserId();
   const q = query.trim();

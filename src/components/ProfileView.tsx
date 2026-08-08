@@ -1,5 +1,6 @@
 import Link from "next/link";
 import PosterCard from "./PosterCard";
+import EditUsername from "./EditUsername";
 
 type Entry = {
   id: string;
@@ -20,7 +21,7 @@ export default function ProfileView({
   editable,
   isOwn,
 }: {
-  user: { id: string; name: string | null; email: string | null };
+  user: { id: string; name: string | null; email: string | null; username: string | null };
   entries: Entry[];
   editable: boolean;
   isOwn: boolean;
@@ -46,7 +47,12 @@ export default function ProfileView({
             {user.name}
             {isOwn ? " (you)" : ""}
           </h2>
-          <div className="text-sm text-ink/40">
+          {isOwn ? (
+            <EditUsername initial={user.username || ""} />
+          ) : (
+            <p className="text-sm text-ink/40 m-0">@{user.username}</p>
+          )}
+          <div className="text-sm text-ink/40 mt-1">
             {entries.filter((e) => e.read).length} read · {entries.length} in library
           </div>
         </div>
