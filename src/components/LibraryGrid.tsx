@@ -6,6 +6,7 @@ import PosterCard from "./PosterCard";
 import RateModal from "./RateModal";
 import { toggleRead, rateItem } from "@/app/actions";
 import { posterColor } from "@/lib/posterColor";
+import EyeIcon from "./EyeIcon";
 
 type Entry = {
   id: string;
@@ -145,14 +146,15 @@ function TableView({ entries, editable }: { entries: Entry[]; editable: boolean 
             <p className="text-xs text-ink/40 m-0">{entry.item.source}</p>
           </div>
           {editable && (
-            <div
+            <button
               onClick={(e) => handleReadToggle(e, entry)}
-              className="w-[22px] h-[22px] rounded-full bg-bg flex items-center justify-center text-xs cursor-pointer shrink-0"
-              style={{ color: entry.read ? "#3f6b4a" : "#8c8a80", boxShadow: "inset 0 0 0 1px var(--line)" }}
+              aria-label={entry.read ? "Mark as unread" : "Mark as read"}
+              className="w-7 h-7 rounded-full bg-white flex items-center justify-center shrink-0"
+              style={{ color: entry.read ? "#20201d" : "#8c8a80", boxShadow: "inset 0 0 0 1px var(--line)" }}
               title={entry.read ? "Read" : "Mark as read"}
             >
-              {entry.read ? "✓" : ""}
-            </div>
+              <EyeIcon open={entry.read} width={13} height={13} />
+            </button>
           )}
           <div className="flex gap-px shrink-0" style={{ minWidth: 62 }}>
             {[1, 2, 3, 4, 5].map((n) => (
