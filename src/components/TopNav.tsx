@@ -27,8 +27,19 @@ export default async function TopNav() {
         {session && (
           <div className="flex items-center gap-5 flex-1">
             <NavLinks />
-            <Link href="/add" aria-label="Add to your library" className="text-base font-medium text-ink/50 hover:text-ink leading-none">
-              +
+            <Link href="/add" aria-label="Add to your library" className="text-ink/50 hover:text-ink">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2.5}
+                strokeLinecap="round"
+                className="inline-block align-[-2px]"
+              >
+                <path d="M12 5v14M5 12h14" />
+              </svg>
             </Link>
           </div>
         )}
