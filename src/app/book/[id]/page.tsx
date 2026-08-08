@@ -5,7 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { posterColor } from "@/lib/posterColor";
 import BookHero from "@/components/BookHero";
-import EyeIcon from "@/components/EyeIcon";
+import BookStatusIcon from "@/components/BookStatusIcon";
 
 export const dynamic = "force-dynamic";
 
@@ -65,7 +65,7 @@ export default async function BookPage({ params }: { params: { id: string } }) {
               className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-white/70 flex items-center justify-center"
               style={{ color: yourEntry.read ? "#20201d" : "#8c8a80" }}
             >
-              <EyeIcon open={yourEntry.read} width={12} height={12} />
+              <BookStatusIcon read={yourEntry.read} width={12} height={12} />
             </div>
           )}
         </div>

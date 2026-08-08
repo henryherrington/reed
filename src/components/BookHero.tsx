@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { toggleRead, addToLibrary } from "@/app/actions";
-import EyeIcon from "./EyeIcon";
+import BookStatusIcon from "./BookStatusIcon";
 
 type Item = { id: string; title: string; url: string; source: string };
 type Entry = {
@@ -70,7 +70,7 @@ export default function BookHero({ item, yourEntry }: { item: Item; yourEntry: E
           color: yourEntry.read ? "#3f6b4a" : "var(--ink)",
         }}
       >
-        <EyeIcon open={yourEntry.read} />
+        <BookStatusIcon read={yourEntry.read} />
       </button>
       <Link
         href={`/review/${yourEntry.id}`}

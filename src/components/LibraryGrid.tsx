@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import PosterCard from "./PosterCard";
 import { toggleRead, rateItem } from "@/app/actions";
 import { posterColor } from "@/lib/posterColor";
-import EyeIcon from "./EyeIcon";
+import BookStatusIcon from "./BookStatusIcon";
 
 type Entry = {
   id: string;
@@ -157,7 +157,7 @@ function TableView({ entries, editable, allowRate }: { entries: Entry[]; editabl
               style={{ color: entry.read ? "#20201d" : "#8c8a80", boxShadow: "inset 0 0 0 1px var(--line)" }}
               title={entry.read ? "Read" : "Mark as read"}
             >
-              <EyeIcon open={entry.read} width={13} height={13} />
+              <BookStatusIcon read={entry.read} width={13} height={13} />
             </button>
           )}
           <div className="flex gap-px shrink-0" style={{ minWidth: 62 }}>

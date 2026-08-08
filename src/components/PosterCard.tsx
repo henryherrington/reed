@@ -4,7 +4,7 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { rateItem, addToLibrary } from "@/app/actions";
 import { posterColor } from "@/lib/posterColor";
-import EyeIcon from "./EyeIcon";
+import BookStatusIcon from "./BookStatusIcon";
 
 type Item = { id: string; title: string; url: string; source: string };
 
@@ -86,7 +86,7 @@ export default function PosterCard({
                 className="w-[22px] h-[22px] rounded-full bg-white/70 flex items-center justify-center"
                 style={{ color: read ? "#20201d" : "#8c8a80" }}
               >
-                <EyeIcon open={read} width={11} height={11} />
+                <BookStatusIcon read={read} width={11} height={11} />
               </div>
             )}
             {showAdd && (
