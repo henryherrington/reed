@@ -3,7 +3,6 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { posterColor } from "@/lib/posterColor";
 import BookHero from "@/components/BookHero";
 
 export const dynamic = "force-dynamic";
@@ -53,15 +52,11 @@ export default async function BookPage({ params }: { params: { id: string } }) {
     ? [yourReview, ...allReviews.filter((e) => e.userId !== session.user.id)]
     : allReviews;
   const avg = allReviews.length ? allReviews.reduce((s, e) => s + (e.rating || 0), 0) / allReviews.length : null;
-  const color = posterColor(item.id);
 
   return (
     <div>
       <div className="flex gap-6 mb-8">
-        <div
-          className="rounded-md shrink-0"
-          style={{ background: color, width: 110, aspectRatio: "5/7" }}
-        />
+        <BookHero item={item} yourEntry={yourEntry} />
         <div className="min-w-0">
           <h1 className="font-serif text-2xl font-semibold mb-1">{item.title}</h1>
           <a
@@ -91,8 +86,6 @@ export default async function BookPage({ params }: { params: { id: string } }) {
               <span className="text-sm text-ink/40">No ratings yet</span>
             )}
           </div>
-
-          <BookHero item={item} yourEntry={yourEntry} />
         </div>
       </div>
 
