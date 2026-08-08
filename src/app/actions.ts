@@ -213,3 +213,138 @@ export async function unfollow(followingId: string) {
   revalidatePath("/activity");
   revalidatePath("/");
 }
+
+function revalidateLists(username?: string | null, listId?: string) {
+  revalidatePath("/");
+  revalidatePath("/profile");
+  revalidatePath("/profile/shelf");
+  revalidatePath("/profile/lists");
+  if (username) {
+    revalidatePath(`/u/${username}`);
+    revalidatePath(`/u/${username}/shelf`);
+    revalidatePath(`/u/${username}/lists`);
+    if (listId) revalidatePath(`/u/${username}/lists/${listId}`);
+  }
+}
+
+export async function searchMyLibraryItems(query: string) {
+  const userId = await requireUserId();
+  const q = query.trim();
+  if (!q) return [];
+
+  const entries = await prisma.libraryEntry.findMany({
+    where: { userId, item: { title: { contains: q, mode: "insensitive" } } },
+    include: { item: true },
+    orderBy: { item: { title: "asc" } },
+    take: 8,
+  });
+
+  return entries.map((e) => e.item);
+}
+
+export async function createList(title: string, description: string, isPublic: boolean) {
+  const userId = await requireUserId();
+  const t = title.trim();
+  if (!t) throw new Error("Give your list a title.");
+
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { username: true } });
+
+  const list = await prisma.list.create({
+    data: { ownerId: userId, title: t, description: description.trim() || null, public: isPublic },
+  });
+
+  revalidateLists(user?.username);
+  return list;
+}
+
+export async function updateList(listId: string, data: { title?: string; description?: string; public?: boolean }) {
+  const userId = await requireUserId();
+  const list = await prisma.list.findUnique({ where: { id: listId }, include: { owner: { select: { username: true } } } });
+  if (!list || list.ownerId !== userId) throw new Error("Not found");
+
+  const updated = await prisma.list.update({
+    where: { id: listId },
+    data: {
+      ...(data.title !== undefined ? { title: data.title.trim() || list.title } : {}),
+      ...(data.description !== undefined ? { description: data.description.trim() || null } : {}),
+      ...(data.public !== undefined ? { public: data.public } : {}),
+    },
+  });
+
+  revalidateLists(list.owner.username, listId);
+  return updated;
+}
+
+export async function deleteList(listId: string) {
+  const userId = await requireUserId();
+  const list = await prisma.list.findUnique({ where: { id: listId }, include: { owner: { select: { username: true } } } });
+  if (!list || list.ownerId !== userId) throw new Error("Not found");
+
+  await prisma.list.delete({ where: { id: listId } });
+
+  revalidateLists(list.owner.username);
+}
+
+export async function addItemToList(listId: string, itemId: string, note?: string) {
+  const userId = await requireUserId();
+  const list = await prisma.list.findUnique({ where: { id: listId }, include: { owner: { select: { username: true } } } });
+  if (!list || list.ownerId !== userId) throw new Error("Not found");
+
+  const maxPos = await prisma.listItem.aggregate({ where: { listId }, _max: { position: true } });
+
+  await prisma.listItem.upsert({
+    where: { listId_itemId: { listId, itemId } },
+    update: { ...(note !== undefined ? { note: note.trim() || null } : {}) },
+    create: { listId, itemId, note: note?.trim() || null, position: (maxPos._max.position ?? -1) + 1 },
+  });
+
+  revalidateLists(list.owner.username, listId);
+}
+
+export async function removeItemFromList(listId: string, itemId: string) {
+  const userId = await requireUserId();
+  const list = await prisma.list.findUnique({ where: { id: listId }, include: { owner: { select: { username: true } } } });
+  if (!list || list.ownerId !== userId) throw new Error("Not found");
+
+  await prisma.listItem.deleteMany({ where: { listId, itemId } });
+
+  revalidateLists(list.owner.username, listId);
+}
+
+export async function saveList(listId: string) {
+  const userId = await requireUserId();
+  const list = await prisma.list.findUnique({
+    where: { id: listId },
+    include: { owner: { select: { username: true } }, items: true },
+  });
+  if (!list) throw new Error("Not found");
+  if (list.ownerId === userId) throw new Error("That's your own list.");
+
+  await prisma.listSave.upsert({
+    where: { userId_listId: { userId, listId } },
+    update: {},
+    create: { userId, listId },
+  });
+
+  await Promise.all(
+    list.items.map((li) =>
+      prisma.libraryEntry.upsert({
+        where: { userId_itemId: { userId, itemId: li.itemId } },
+        update: {},
+        create: { userId, itemId: li.itemId },
+      })
+    )
+  );
+
+  revalidateLists(list.owner.username, listId);
+}
+
+export async function unsaveList(listId: string) {
+  const userId = await requireUserId();
+  const list = await prisma.list.findUnique({ where: { id: listId }, include: { owner: { select: { username: true } } } });
+  if (!list) throw new Error("Not found");
+
+  await prisma.listSave.deleteMany({ where: { userId, listId } });
+
+  revalidateLists(list.owner.username, listId);
+}

@@ -22,6 +22,9 @@ model User {
 
   following Follow[] @relation("Follower")
   followers Follow[] @relation("Following")
+
+  lists      List[]
+  listSaves  ListSave[]
 }
 
 model Account {
@@ -66,7 +69,8 @@ model Item {
   source    String
   createdAt DateTime @default(now())
 
-  library LibraryEntry[]
+  library   LibraryEntry[]
+  listItems ListItem[]
 }
 
 model LibraryEntry {
@@ -96,4 +100,44 @@ model Follow {
   createdAt DateTime @default(now())
 
   @@unique([followerId, followingId])
+}
+
+model List {
+  id          String   @id @default(cuid())
+  ownerId     String
+  owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  title       String
+  description String?  @db.Text
+  public      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  items ListItem[]
+  saves ListSave[]
+}
+
+model ListItem {
+  id       String @id @default(cuid())
+  listId   String
+  list     List   @relation(fields: [listId], references: [id], onDelete: Cascade)
+  itemId   String
+  item     Item   @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  note     String? @db.Text
+  position Int     @default(0)
+
+  createdAt DateTime @default(now())
+
+  @@unique([listId, itemId])
+}
+
+model ListSave {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listId String
+  list   List   @relation(fields: [listId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, listId])
 }

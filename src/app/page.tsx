@@ -9,6 +9,7 @@ import SortSelect from "@/components/SortSelect";
 import Rail from "@/components/Rail";
 import LibraryGrid from "@/components/LibraryGrid";
 import Greeting from "@/components/Greeting";
+import ListCard from "@/components/ListCard";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +33,7 @@ export default async function HomePage({
   const readFilter = searchParams.read === "read" || searchParams.read === "unread" ? searchParams.read : "all";
   const sort = searchParams.sort === "rating" ? "rating" : "recent";
 
-  const [entries, upNext, myLib, follows] = await Promise.all([
+  const [entries, upNext, myLib, follows, readEntries, saves] = await Promise.all([
     prisma.libraryEntry.findMany({
       where: {
         userId,
@@ -50,10 +51,29 @@ export default async function HomePage({
     }),
     prisma.libraryEntry.findMany({ where: { userId }, select: { itemId: true } }),
     prisma.follow.findMany({ where: { followerId: userId }, select: { followingId: true } }),
+    prisma.libraryEntry.findMany({ where: { userId, read: true }, select: { itemId: true } }),
+    prisma.listSave.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      include: { list: { include: { owner: { select: { username: true } }, items: { select: { itemId: true } } } } },
+    }),
   ]);
 
   const scopeIds = [userId, ...follows.map((f) => f.followingId)];
   const myItemIds = new Set(myLib.map((e) => e.itemId));
+  const readItemIds = new Set(readEntries.map((e) => e.itemId));
+
+  const savedLists = saves
+    .map((s) => ({
+      id: s.list.id,
+      title: s.list.title,
+      description: s.list.description,
+      itemCount: s.list.items.length,
+      ownerUsername: s.list.owner.username,
+      total: s.list.items.length,
+      read: s.list.items.filter((li) => readItemIds.has(li.itemId)).length,
+    }))
+    .filter((l) => l.total === 0 || l.read < l.total);
 
   const rated = await prisma.libraryEntry.findMany({
     where: { userId: { in: scopeIds }, rating: { not: null } },
@@ -89,6 +109,21 @@ export default async function HomePage({
                 rating={e.rating}
                 showRead
                 editable
+              />
+            </div>
+          ))}
+        </Rail>
+      )}
+
+      {savedLists.length > 0 && (
+        <Rail title="Saved lists">
+          {savedLists.map((l) => (
+            <div key={l.id} style={{ width: 220 }} className="shrink-0">
+              <ListCard
+                list={l}
+                href={`/u/${l.ownerUsername}/lists/${l.id}`}
+                ownerUsername={l.ownerUsername}
+                progress={{ read: l.read, total: l.total }}
               />
             </div>
           ))}
