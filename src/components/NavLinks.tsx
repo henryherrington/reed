@@ -12,15 +12,16 @@ export default function NavLinks() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex gap-1 flex-1">
+    <nav className="flex gap-5 flex-1 items-center">
       {TABS.map((t) => {
         const active = pathname === t.href;
         return (
           <Link
             key={t.href}
             href={t.href}
-            className={`px-3 py-2 rounded-lg text-sm font-medium ${active ? "text-ink" : "text-ink/60 hover:text-ink"}`}
-            style={active ? { boxShadow: "inset 0 -2px 0 #b5502f", fontWeight: 600 } : undefined}
+            className={`text-sm pb-0.5 border-b-2 ${
+              active ? "text-accent font-semibold border-accent" : "text-ink/60 font-medium border-transparent hover:text-ink"
+            }`}
           >
             {t.label}
           </Link>
